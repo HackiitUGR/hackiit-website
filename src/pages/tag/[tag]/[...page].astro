@@ -3,7 +3,6 @@ import Card from "../../../components/Card.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import type { Page, GetStaticPathsOptions } from "astro";
 import { CollectionEntry, getCollection } from "astro:content";
-import { getSiteURL } from "../../../utils/getSiteUrl";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
     const allPosts = await getCollection("blog");
@@ -55,24 +54,14 @@ const { page } = Astro.props;
                     <ul>
                         {page.url.prev ? (
                             <li class="btn">
-                                <a
-                                    href={getSiteURL(
-                                        page.url.prev,
-                                        Astro.site
-                                    ).toString()}
-                                >
+                                <a href={page.url.prev}>
                                     Previous
                                 </a>
                             </li>
                         ) : null}
                         {page.url.next ? (
                             <li class="btn">
-                                <a
-                                    href={getSiteURL(
-                                        page.url.next,
-                                        Astro.site
-                                    ).toString()}
-                                >
+                                <a href={page.url.next}>
                                     Next
                                 </a>
                             </li>

@@ -62,9 +62,7 @@ const siteImg = image.src;
     title={title}
     description={description}
     siteName={site.siteName}
-    url={typeof canonicalURL === "string"
-        ? canonicalURL
-        : canonicalURL.toString()}
+    url={canonicalURL}
     pageType={pageType}
     twitterHandle={site.twitterCreator}
 />
