@@ -15,22 +15,24 @@
     "devDependencies": {
         "@astrojs/image": "^0.13.1",
         "@astrojs/prefetch": "^0.1.2",
-        "@astrojs/rss": "^2.4.4",
-        "@astrojs/sitemap": "^1.4.0",
-        "astro": "^2.10.15",
-        "astro-compress": "^2.2.22",
-        "astro-icon": "^0.8.2",
-        "autoprefixer": "^10.4.19",
+        "@astrojs/rss": "^2.4.3",
+        "@astrojs/sitemap": "^1.3.3",
+        "astro": "^2.7.2",
+        "astro-icon": "^0.8.1",
+        "autoprefixer": "^10.4.14",
         "prettier": "^2.8.8",
         "prettier-plugin-astro": "^0.8.1",
-        "sass": "^1.74.1",
-        "sharp": "^0.31.3",
+        "sass": "^1.63.6",
+        "sharp": "^0.33.3",
         "simple-astro-seo": "^0.1.3",
-        "svgo": "~2.8.0",
+        "svgo": "2.8",
         "typescript": "^4.9.5",
-        "vite": "^4.5.3"
+        "vite": "^4.3.9"
     },
     "browserslist": [
         "defaults"
-    ]
+    ],
+    "dependencies": {
+        "astro-compress": "^2.2.22"
+    }
 }
