@@ -1,8 +1,8 @@
 name: "🐛 Reporte de Error"
 description: Crear un nuevo ticket para un error.
-title: "🐛 [ERROR] - <título>"
+title: "[BUG] - <título>"
 labels: [
-  "error"
+  "bug"
 ]
 body:
   - type: textarea
