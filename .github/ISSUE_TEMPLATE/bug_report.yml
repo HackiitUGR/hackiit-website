@@ -1,5 +1,5 @@
 name: "🐛 Reporte de Error"
-description: Crear un nuevo ticket para un error.
+description: Crear un nuevo ticket para un error. Por favor, añade una label de "severity/XXXX" de las disponibles en función de la gravedad del error.
 title: "[BUG] - <título>"
 labels: [
   "bug"

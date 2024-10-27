@@ -1,5 +1,5 @@
 name: "💡 Solicitud de Funcionalidad"
-description: Crear un nuevo ticket para una solicitud de nueva funcionalidad
+description: Crear un nuevo ticket para una solicitud de nueva funcionalidad. Por favor, añade una label de "priority/XXXX" de las disponibles en función de la prioridad de la funcionalidad.
 title: "[FEATURE_REQUEST] - <título>"
 labels: [
   "enhancement"
