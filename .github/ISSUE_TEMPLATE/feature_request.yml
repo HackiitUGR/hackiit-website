@@ -1,0 +1,23 @@
+name: "💡 Solicitud de Funcionalidad"
+description: Crear un nuevo ticket para una solicitud de nueva funcionalidad
+title: "[FEATURE_REQUEST] - <título>"
+labels: [
+  "enhancement"
+]
+body:
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: "Descripción"
+      description: Proporcione una descripción detallada de la funcionalidad
+      placeholder: Describe en detalle tu solicitud de funcionalidad
+    validations:
+      required: true
+  - type: textarea
+    id: issue_referencia
+    attributes:
+      label: "Issue de Referencia"
+      description: Issue comunes
+      placeholder: "#IDs de issue"
+    validations:
+      required: false
