@@ -1,32 +1,24 @@
 ---
-import CmdHeader from "../components/CmdHeader.astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
-const desc = "The page does not exists";
+import Layout from '~/layouts/Layout.astro';
+import { getHomePermalink } from '~/utils/permalinks';
+
+const title = `Error 404`;
 ---
 
-<BaseLayout title={"Page Not Found"} description={desc}>
-    <CmdHeader
-        slot="header"
-        cmd={""}
-        title={"sudo rm -rf --no-preserve-root"}
-    />
-
-    <Fragment slot="main" aria-hidden="true">
-        <p class="main-404">
-            Oops!<br />Error 404 Not found<br /><small aria-hidden="true"
-                >Please <strong>NEVER</strong> write this command on a UNIX system
-                terminal!</small
-            >
+<Layout metadata={{ title }}>
+  <section class="flex items-center h-full p-16">
+    <div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
+      <div class="max-w-md text-center">
+        <h2 class="mb-8 font-bold text-9xl">
+          <span class="sr-only">Error</span>
+          <span class="text-primary">404</span>
+        </h2>
+        <p class="text-3xl font-semibold md:text-3xl">Sorry, we couldn't find this page.</p>
+        <p class="mt-4 mb-8 text-lg text-muted dark:text-slate-400">
+          But dont worry, you can find plenty of other things on our homepage.
         </p>
-    </Fragment>
-</BaseLayout>
-
-<style lang="scss">
-    .main-404 {
-        text-align: center;
-        font-size: var(--fs-3);
-        & small {
-            font-size: var(--fs-0);
-        }
-    }
-</style>
+        <a rel="noopener noreferrer" href={getHomePermalink()} class="btn ml-4">Back to homepage</a>
+      </div>
+    </div>
+  </section>
+</Layout>
