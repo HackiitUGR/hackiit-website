@@ -1,9 +1,19 @@
 ---
 import { SITE } from 'astrowind:config';
+import logo from '~/assets/images/logo.png';
+import Image from '~/components/common/Image.astro';
 ---
 
 <span
   class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white"
 >
-  🚀 {SITE?.name}
+  {
+    <Image
+      src={logo}
+      alt="Hackiit"
+      width={80}
+      class="mx-auto rounded-md w-full"
+      inferSize={true}
+    />
+  }
 </span>
