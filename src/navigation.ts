@@ -3,7 +3,7 @@ import { getPermalink, getBlogPermalink, getAsset } from './utils/permalinks';
 export const headerData = {
   links: [
     {
-      text: 'Home',
+      text: 'Inicio',
       href: getPermalink('/'),
     },
     {
@@ -11,18 +11,18 @@ export const headerData = {
       href: getBlogPermalink(),
     },
     {
-      text: 'About',
+      text: 'Acerca de',
       links: [
         {
-          text: 'About us',
+          text: 'Sobre nosotros',
           href: getPermalink('/about'),
         },
         {
-          text: 'Terms',
+          text: 'Términos',
           href: getPermalink('/terms'),
         },
         {
-          text: 'Privacy policy',
+          text: 'Política de privacidad',
           href: getPermalink('/privacy'),
         }
       ],
@@ -34,8 +34,8 @@ export const headerData = {
 export const footerData = {
   links: [],
   secondaryLinks: [
-    { text: 'Terms', href: getPermalink('/terms') },
-    { text: 'Privacy Policy', href: getPermalink('/privacy') },
+    { text: 'Términos', href: getPermalink('/terms') },
+    { text: 'Política de privacidad', href: getPermalink('/privacy') },
   ],
   socialLinks: [
     { ariaLabel: 'X', icon: 'tabler:brand-x', href: 'https://x.com/hackiit_ugr' },
