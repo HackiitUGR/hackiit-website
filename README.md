@@ -23,7 +23,5 @@ La página web usa la herramienta [Astro](https://astro.build/). Para poder usar
 2. El contenedor generado es completamente autocontenido y usa un servidor de Nginx para servir los archivos, por tanto sólo queda ejecutar el contenedor:
 
 ```bash
-   docker run -d -p 8080:80 hackiit-website:latest
+   docker run -d -p 8080:8080 hackiit-website:latest
 ```
-
-
