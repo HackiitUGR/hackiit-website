@@ -1,21 +1,21 @@
 ---
 import { Icon } from 'astro-icon/components';
 
-import Image from '~/components/common/Image.astro';
+import { Image } from 'astro:assets';
+import { findImage } from '~/utils/images';
 import PostTags from '~/components/blog/Tags.astro';
 import SocialShare from '~/components/common/SocialShare.astro';
-
 import { getPermalink } from '~/utils/permalinks';
 import { getFormattedDate } from '~/utils/utils';
 
 import type { Post } from '~/types';
-
 export interface Props {
   post: Post;
   url: string | URL;
 }
 
 const { post, url } = Astro.props;
+const image = await findImage(post.image);
 ---
 
 <section class="py-8 sm:py-16 lg:py-20 mx-auto">
@@ -71,13 +71,13 @@ const { post, url } = Astro.props;
       </p>
 
       {
-        post.image ? (
+        image ? (
           <Image
-            src={post.image}
+            src={image}
             class="max-w-full lg:max-w-[900px] mx-auto mb-6 sm:rounded-md bg-gray-400 dark:bg-slate-700"
             widths={[400, 900]}
             sizes="(max-width: 900px) 400px, 900px"
-            alt={post?.excerpt || ''}
+            alt={post?.title || ''}
             width={900}
             height={506}
             loading="eager"

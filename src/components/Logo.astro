@@ -1,28 +1,25 @@
 ---
-import { SITE } from 'astrowind:config';
-import logoDark from '~/assets/images/logo-dark.svg';  // Logo negro para modo claro
-import logoLight from '~/assets/images/logo-light.png'; // Logo blanco para modo oscuro
-import Image from '~/components/common/Image.astro';
+import { Image } from 'astro:assets';
+import logoLight from '~/assets/images/logo-light.png';
+import logoDark from '~/assets/images/logo-dark.svg';
 ---
 
 <span
-  class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white"
+  class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white flex items-center"
 >
-  <!-- Logo para modo claro (se oculta en modo oscuro) -->
-  <Image
-    src={logoDark}
-    alt="Hackiit"
-    width={80}
-    class="mx-auto rounded-md w-full block dark:hidden"
-    inferSize={true}
+  <Image 
+    src={logoDark} 
+    alt="Hackiit Logo" 
+    class="h-8 md:h-10 w-auto block dark:hidden" 
+    loading="eager" 
+    fetchpriority="high" 
   />
   
-  <!-- Logo para modo oscuro (se oculta en modo claro) -->
-  <Image
-    src={logoLight}
-    alt="Hackiit"
-    width={80}
-    class="mx-auto rounded-md w-full hidden dark:block"
-    inferSize={true}
+  <Image 
+    src={logoLight} 
+    alt="Hackiit Logo" 
+    class="h-8 md:h-10 w-auto hidden dark:block" 
+    loading="eager" 
+    fetchpriority="high" 
   />
 </span>
