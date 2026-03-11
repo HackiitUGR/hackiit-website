@@ -1,0 +1,261 @@
+---
+import type { Form as Props } from '~/types';
+import Button from '~/components/ui/Button.astro';
+
+const { inputs, textarea, disclaimer, button = 'Contáctanos', description = '' } = Astro.props;
+const siteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
+---
+
+<form id="contact-form" class="relative">
+  {
+    inputs &&
+      inputs.map(
+        ({ type = 'text', name, label = '', autocomplete = 'on', placeholder = '' }) =>
+          name && (
+            <div class="mb-6">
+              {label && (
+                <label for={name} class="block text-sm font-medium">
+                  {label}
+                </label>
+              )}
+              <input
+                type={type}
+                name={name}
+                id={name}
+                autocomplete={autocomplete}
+                placeholder={placeholder}
+                class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+                required
+              />
+            </div>
+          )
+      )
+  }
+
+  {
+    textarea && (
+      <div class="mb-6">
+        <label for="textarea" class="block text-sm font-medium">
+          {textarea.label}
+        </label>
+        <textarea
+          id="textarea"
+          name={textarea.name ? textarea.name : 'message'}
+          rows={textarea.rows ? textarea.rows : 4}
+          placeholder={textarea.placeholder}
+          class="py-3 px-4 block w-full text-md rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900"
+          required
+        />
+      </div>
+    )
+  }
+
+  {
+    disclaimer && (
+      <div class="mt-3 flex items-start mb-6">
+        <div class="flex mt-0.5">
+          <input
+            id="disclaimer"
+            name="disclaimer"
+            type="checkbox"
+            class="cursor-pointer mt-1 w-4 h-4 rounded border-gray-300"
+            required
+          />
+        </div>
+        <div class="ml-3">
+          <label for="disclaimer" class="cursor-pointer select-none text-sm text-gray-600 dark:text-gray-400">
+            {disclaimer.label}
+          </label>
+        </div>
+      </div>
+    )
+  }
+
+  <input type="text" name="honeypot" style="display: none;" tabindex="-1" autocomplete="off" />
+
+  <div 
+    id="recaptcha-wrapper" 
+    class="mt-6 mb-2 min-h-[78px]"
+    data-sitekey={siteKey}
+  >
+    <div id="recaptcha-container"></div>
+    <p id="captcha-error" class="hidden text-red-500 text-sm mt-1">Por favor verifica que no eres un robot.</p>
+  </div>
+
+  <div id="form-message" class="hidden mt-4 p-4 rounded-lg"></div>
+
+  {
+    button && (
+      <div class="mt-6 grid">
+        <Button variant="primary" type="submit" id="submit-button">
+          {button}
+        </Button>
+      </div>
+    )
+  }
+
+  {
+    description && (
+      <div class="mt-3 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+      </div>
+    )
+  }
+</form>
+
+<script is:inline>
+  // Variables globales de estado
+  window.currentWidgetId = null;
+  window.resizeTimer = null;
+
+  // 1. Renderizado seguro del Widget (Destruir y Crear)
+  function renderWidget() {
+      const wrapper = document.getElementById('recaptcha-wrapper');
+      
+      // Verificación de seguridad básica
+      if (!wrapper || !wrapper.dataset.sitekey || !window.grecaptcha || !window.grecaptcha.render) {
+          return;
+      }
+
+      // Eliminar contenedor previo para evitar "already rendered"
+      const oldContainer = document.getElementById('recaptcha-container');
+      if (oldContainer) oldContainer.remove();
+
+      // Crear nuevo contenedor limpio
+      const newContainer = document.createElement('div');
+      newContainer.id = 'recaptcha-container';
+      wrapper.appendChild(newContainer);
+      
+      const siteKey = wrapper.dataset.sitekey;
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      try {
+          window.currentWidgetId = window.grecaptcha.render(newContainer, {
+              'sitekey': siteKey,
+              'theme': isDark ? 'dark' : 'light',
+              'callback': function() {
+                   // Ocultar mensaje de error si el usuario resuelve el captcha
+                   const errorMsg = document.getElementById('captcha-error');
+                   if (errorMsg) errorMsg.classList.add('hidden');
+              },
+              'expired-callback': function() {
+                   // Reiniciar si caduca
+                   if (window.grecaptcha) window.grecaptcha.reset(window.currentWidgetId);
+              }
+          });
+      } catch (e) {
+          // Fallo silencioso en producción o reporte a servicio de logs
+          console.error('Recaptcha error:', e);
+      }
+  }
+
+  // 2. Callback global de Google
+  window.onRecaptchaLoad = function() {
+      renderWidget();
+  };
+
+  // 3. Inyección del Script de Google (Solo si no existe)
+  if (!document.getElementById('google-recaptcha-script')) {
+      const script = document.createElement('script');
+      script.id = 'google-recaptcha-script';
+      script.src = "https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+  } else if (window.grecaptcha && window.grecaptcha.render) {
+      renderWidget();
+  }
+
+  // 4. Observer para Modo Oscuro (con Debounce)
+  const observer = new MutationObserver((mutations) => {
+    let shouldRender = false;
+    mutations.forEach((m) => {
+      if (m.attributeName === 'class') shouldRender = true;
+    });
+    
+    if (shouldRender) {
+        if (window.resizeTimer) clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(renderWidget, 500);
+    }
+  });
+  
+  if (document.documentElement) {
+      observer.observe(document.documentElement, { attributes: true });
+  }
+
+  // 5. Manejo del Envío
+  const form = document.getElementById('contact-form');
+  
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const messageDiv = document.getElementById('form-message');
+      const submitButton = document.getElementById('submit-button');
+      const captchaError = document.getElementById('captcha-error');
+
+      // Honeypot check
+      const honeypot = form.querySelector('input[name="honeypot"]');
+      if (honeypot && honeypot.value) return;
+
+      // Validación de Captcha
+      if (window.currentWidgetId === null) {
+          renderWidget(); // Intento de recuperación
+          return;
+      }
+
+      const response = window.grecaptcha.getResponse(window.currentWidgetId);
+      
+      if (!response) {
+          if (captchaError) captchaError.classList.remove('hidden');
+          return;
+      }
+
+      // Estado de carga
+      const originalText = submitButton.textContent;
+      submitButton.disabled = true;
+      submitButton.classList.add('opacity-70', 'cursor-not-allowed');
+      submitButton.textContent = 'Enviando...';
+      if (messageDiv) messageDiv.classList.add('hidden');
+
+      const formData = new FormData(form);
+      formData.set('g-recaptcha-response', response);
+
+      try {
+        const fetchRes = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await fetchRes.json();
+
+        if (messageDiv) {
+          messageDiv.classList.remove('hidden');
+          if (fetchRes.ok && data.success) {
+            // Éxito
+            messageDiv.className = 'mt-4 p-4 rounded-lg bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+            messageDiv.textContent = '¡Mensaje enviado con éxito!';
+            form.reset();
+            window.grecaptcha.reset(window.currentWidgetId);
+          } else {
+            // Error de API
+            messageDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+            messageDiv.textContent = data.error || 'Hubo un problema al enviar el mensaje.';
+            window.grecaptcha.reset(window.currentWidgetId);
+          }
+        }
+      } catch (err) {
+        // Error de red
+        if (messageDiv) {
+            messageDiv.classList.remove('hidden');
+            messageDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+            messageDiv.textContent = 'Error de conexión. Por favor intenta más tarde.';
+        }
+        if (window.grecaptcha) window.grecaptcha.reset(window.currentWidgetId);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.classList.remove('opacity-70', 'cursor-not-allowed');
+        submitButton.textContent = originalText;
+      }
+    });
+  }
+</script>

@@ -1,0 +1,63 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import ContactUs from '~/components/widgets/Contact.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+
+const metadata = {
+  title: 'Contacto',
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- HeroText Widget ******************* -->
+
+  <HeroText tagline="Formulario de contacto" title="¡Conectemos!" />
+
+  <ContactUs
+    id="form"
+    title="¿Tienes alguna pregunta?"
+    subtitle="Ponte en contacto con nosotros a través del siguiente formulario y te responderemos lo más rápido posible."
+    inputs={[
+      {
+        type: 'text',
+        name: 'name',
+        label: 'Nombre',
+      },
+      {
+        type: 'email',
+        name: 'email',
+        label: 'Correo electrónico',
+      },
+    ]}
+    textarea={{
+      label: 'Mensaje',
+    }}
+    disclaimer={{
+      label:
+        'Al enviar este formulario de contacto, reconoces y aceptas la recopilación de tu información personal.',
+    }}
+    description="Nuestro equipo de soporte generalmente responde dentro de las 24 horas hábiles."
+  />
+
+  <Features2
+    title="¡Estamos aquí para ayudar!"
+    items={[
+
+      {
+        title: 'Ubicación',
+        description: 'Escuela Técnica Superior de Ingeniería Informática y Telecomunicaciones, Granada (España)',
+        icon: 'tabler:map-pin',
+      },
+    ]}
+    classes={{
+      items: {
+        // centrar el único elemento
+        container: 'flex justify-center',
+        panel:
+          'rounded-lg shadow-[0_4px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.1)] backdrop-blur border border-[#ffffff29] bg-white dark:bg-slate-900 p-6 text-center max-w-sm',
+      },
+      headline: { container: 'max-w-3xl mx-auto text-center' },
+    }}
+  />
+</Layout>
