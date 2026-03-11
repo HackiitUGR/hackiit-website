@@ -51,3 +51,27 @@ Si no te es suficiente con nuestro ejemplo te recomendamos los siguientes tutori
 2. Espera que alguien te responda.
 3. Nadie te responde, procede a arreglarlo tu mismo :)
 	1. Para indicar que una PR esta resolviendo una issue se puede indicar en los commits o el mensaje de la PR añadiendo el texto `fix #<issue_id>`, así cuando la PR se incorpore a la rama principal la issue se cerrará de manera automática.
+
+## ¿Quieres aportar con una entrada en nuestro blog?
+Los posts se agregan en un fichero markdown.
+El nombre del fichero no debe contener espacios, se utilizan guiones ("-") para sustituirlos y la extensión debe ser "md". La ruta para la subida debe ser: `src/content/post`.
+
+En la parte superior del fichero debes introducir la siguiente cabecera:
+
+```markdown
+---
+publishDate: 2024-05-10T12:00:00Z
+title: 'Escribe aquí el título de tu artículo'
+excerpt: 'Escribe un breve resumen de 1 o 2 líneas sobre lo que trata el post. Esto aparecerá en la página principal.'
+image: '~/assets/images/nombre-de-tu-imagen.png'
+category: 'Tutoriales'
+tags:
+  - web
+  - ctf
+  - inyeccion-sql
+author: 'Tu Nombre o Nickname'
+---
+
+# Aquí empieza el contenido de tu artículo usando Markdown normal...
+```
+Es importante que agregues en `src/assets/images/` una imagen para tu post.
