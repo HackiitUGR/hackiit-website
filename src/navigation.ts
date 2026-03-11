@@ -24,11 +24,14 @@ export const headerData = {
         {
           text: 'Política de privacidad',
           href: getPermalink('/privacy'),
+        },
+        {
+          text: 'Contacto',
+          href: getPermalink('/contact'),
         }
       ],
     }
   ],
-  //actions: [{ text: 'Download', href: 'https://github.com/onwidget/astrowind', target: '_blank' }],
 };
 
 export const footerData = {
