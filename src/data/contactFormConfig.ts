@@ -6,9 +6,9 @@ export const contactFormConfig = {
       label: 'Nombre',
     },
     {
-      type: 'email',
-      name: 'email',
-      label: 'Correo electrónico',
+      type: 'text',
+      name: 'telegram',
+      label: 'Usuario de telegram',
     },
   ],
   textarea: {
