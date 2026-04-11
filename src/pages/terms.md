@@ -1,5 +1,7 @@
-# Términos y Condiciones de Uso  
-## Hackiit
+---
+layout: ~/layouts/MarkdownLayout.astro
+title: Términos y Condiciones de Uso
+---
 
 **Última actualización:** 11/04/2026
 

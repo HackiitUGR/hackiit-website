@@ -1,5 +1,7 @@
-# Política de Privacidad  
-## Hackiit
+---
+layout: ~/layouts/MarkdownLayout.astro
+title: Política de Privacidad
+---
 
 **Última actualización:** 11/04/2026
 
