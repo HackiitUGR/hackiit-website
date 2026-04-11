@@ -28,6 +28,10 @@ export const headerData = {
         {
           text: 'Contacto',
           href: getPermalink('/contact'),
+        },
+        {
+          text: 'Únete al club',
+          href: getPermalink('/unete'),
         }
       ],
     }

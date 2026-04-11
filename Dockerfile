@@ -1,68 +1,43 @@
 # syntax=docker/dockerfile:1
 ARG NODE_VERSION=20-alpine
-ARG NGINX_VERSION=alpine
 
 FROM node:${NODE_VERSION} AS builder
 
-# Install build dependencies
-RUN apk add --no-cache libc6-compat
+# Public envs used by Astro in client-side code must exist at build time.
+ARG PUBLIC_RECAPTCHA_SITE_KEY
+ENV PUBLIC_RECAPTCHA_SITE_KEY=${PUBLIC_RECAPTCHA_SITE_KEY}
 
-# Configure pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 WORKDIR /app
 
-# Copy dependency files first for better caching
 COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Copy source code
 COPY . .
+RUN pnpm run build && find /app/dist -name "*.map" -delete && pnpm prune --prod
 
-# Build application with optimizations
-RUN pnpm run build && \
-    # Remove source maps and unnecessary files
-    find /app/dist -name "*.map" -delete && \
-    # Remove dev dependencies
-    pnpm prune --prod
+FROM node:${NODE_VERSION} AS runtime
 
-# Production stage
-FROM nginx:${NGINX_VERSION} AS runtime
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=4321
 
-# Install security updates and curl for health check
-RUN apk --no-cache upgrade && \
-    apk --no-cache add curl
+WORKDIR /app
 
-# Fix permissions for nginx user
-RUN chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d && \
-    touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
+RUN addgroup -S app && adduser -S -G app app
 
-# Remove default nginx assets
-RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder --chown=app:app /app/dist ./dist
+COPY --from=builder --chown=app:app /app/package.json ./package.json
+COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 
-# Copy built application with proper ownership
-COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
+USER app
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+EXPOSE 4321
 
-# Copy custom nginx config with proper ownership
-COPY --chown=nginx:nginx nginx.conf /etc/nginx/conf.d/default.conf
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD node -e "fetch('http://127.0.0.1:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-# Switch to non-root user
-USER nginx
-
-# Expose port
-EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/ || exit 1
-
-# Start nginx
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+CMD ["node", "./dist/server/entry.mjs"]
