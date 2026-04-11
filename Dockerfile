@@ -46,8 +46,7 @@ RUN chown -R nginx:nginx /var/cache/nginx && \
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built application with proper ownership
-COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
-
+COPY --from=builder --chown=nginx:nginx /app/dist/client /usr/share/nginx/html
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
 
