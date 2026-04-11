@@ -25,3 +25,8 @@ La página web usa la herramienta [Astro](https://astro.build/). Para poder usar
 ```bash
    docker run -d -p 8080:8080 hackiit-website:latest
 ```
+Las siguientes variables de entorno son necesarias:
+- TELEGRAM_BOT_TOKEN: Token del bot de telegram
+- TELEGRAM_CHAT_ID: Chat al que el bot mandará los mensajes recibidos.
+- PUBLIC_RECAPTCHA_SITE_KEY: Clave publica de Google Recaptcha.
+- RECAPTCHA_SECRET_KEY: Clave secreta de Google Recaptcha.
