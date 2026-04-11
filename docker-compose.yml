@@ -1,13 +1,22 @@
 services:
   hackiit-website:
-    build: .
+    build:
+      context: .
+      args:
+        PUBLIC_RECAPTCHA_SITE_KEY: ${PUBLIC_RECAPTCHA_SITE_KEY}
     container_name: hackiit-website
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - HOST=0.0.0.0
+      - PORT=4321
     ports:
-      - "8080:8080"
+      - "8080:4321"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4321/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
-      timeout: 3s
+      timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 10s

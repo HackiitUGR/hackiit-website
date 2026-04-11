@@ -1,0 +1,21 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import ContactUs from '~/components/widgets/Contact.astro';
+import { contactFormConfig } from '~/data/contactFormConfig';
+
+const metadata = {
+  title: 'Únete al club',
+};
+---
+
+<Layout metadata={metadata}>
+  <HeroText tagline="Formulario de inscripción" title="¡Únete a Hackiit!" />
+
+  <ContactUs
+    id="form"
+    title="¿Quieres formar parte del club?"
+    subtitle="Rellena este formulario para unirte a Hackiit y nos pondremos en contacto contigo lo antes posible."
+    {...contactFormConfig}
+  />
+</Layout>

@@ -6,9 +6,9 @@ export const prerender = false;
 // Esquema de sanitización con Zod
 const ContactSchema = z.object({
   name: z.string().min(2).max(100).trim(),
-  email: z.string().email().toLowerCase().trim(),
+  telegram: z.string().min(2).max(100).trim(),
   message: z.string().min(10).max(2000).trim(),
-  'g-recaptcha-response': z.string().min(1, "Captcha obligatorio"),
+  'g-recaptcha-response': z.string().min(1, 'Captcha obligatorio'),
 });
 
 // Función de escape para evitar inyecciones en el bot de Telegram
@@ -35,11 +35,16 @@ function checkRateLimit(ip: string): boolean {
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const ip = clientAddress || 'unknown';
+  const jsonHeaders = { 'Content-Type': 'application/json; charset=utf-8' };
+  const genericError = { error: 'No se pudo procesar la solicitud.' };
 
   try {
     // Rate Limiting
     if (checkRateLimit(ip)) {
-      return new Response(JSON.stringify({ error: 'Límite excedido. Reintenta en 5 min.' }), { status: 429 });
+      return new Response(JSON.stringify(genericError), {
+        status: 429,
+        headers: jsonHeaders,
+      });
     }
 
     // Validación de datos de entrada
@@ -48,14 +53,23 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const validatedData = ContactSchema.safeParse(payload);
 
     if (!validatedData.success) {
-      return new Response(JSON.stringify({ error: 'Datos no válidos' }), { status: 400 });
+      return new Response(JSON.stringify(genericError), { status: 400, headers: jsonHeaders });
     }
 
-    const { name, email, message, 'g-recaptcha-response': captchaToken } = validatedData.data;
+    const { name, telegram, message, 'g-recaptcha-response': captchaToken } = validatedData.data;
 
     // Verificación con la API de Google
     const googleVerifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
-    const secretKey = import.meta.env.RECAPTCHA_SECRET_KEY;
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!secretKey || !botToken || !chatId) {
+      return new Response(JSON.stringify(genericError), {
+        status: 500,
+        headers: jsonHeaders,
+      });
+    }
 
     const captchaRes = await fetch(googleVerifyUrl, {
       method: 'POST',
@@ -67,20 +81,27 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       }),
     });
 
+    if (!captchaRes.ok) {
+      return new Response(JSON.stringify(genericError), {
+        status: 502,
+        headers: jsonHeaders,
+      });
+    }
+
     const captchaResult = await captchaRes.json();
 
     if (!captchaResult.success) {
-      return new Response(JSON.stringify({ error: 'Fallo en la validación del Captcha' }), { status: 403 });
+      return new Response(JSON.stringify(genericError), {
+        status: 403,
+        headers: jsonHeaders,
+      });
     }
 
     // Envío a Telegram con escape de caracteres
-    const botToken = import.meta.env.TELEGRAM_BOT_TOKEN;
-    const chatId = import.meta.env.TELEGRAM_CHAT_ID;
-
     const telegramMessage = `
 <b>Mensaje desde la Web</b>
 <b>Nombre:</b> ${escapeHTML(name)}
-<b>Email:</b> ${escapeHTML(email)}
+<b>Telegram:</b> ${escapeHTML(telegram)}
 <b>Mensaje:</b>
 ${escapeHTML(message)}
     `;
@@ -95,12 +116,17 @@ ${escapeHTML(message)}
       }),
     });
 
-    if (!telegramRes.ok) throw new Error('Error en API de Telegram');
+    if (!telegramRes.ok) {
+      return new Response(JSON.stringify(genericError), {
+        status: 502,
+        headers: jsonHeaders,
+      });
+    }
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: jsonHeaders });
 
   } catch (error) {
     console.error('Server Error:', error);
-    return new Response(JSON.stringify({ error: 'Error interno' }), { status: 500 });
+    return new Response(JSON.stringify(genericError), { status: 500, headers: jsonHeaders });
   }
 };
